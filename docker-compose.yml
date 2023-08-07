@@ -2,20 +2,24 @@ version: '2.1'
 
 networks:
   monitor-net:
+    name: monitor-net
     driver: bridge
+  proxy:
+    external: true # utilise le network externe utilisé par Traefik
 
 volumes:
     prometheus_data: {}
     grafana_data: {}
 
 services:
-
   prometheus:
     image: prom/prometheus:v2.41.0
     container_name: prometheus
+    env_file:
+      - .env
     volumes:
       - ./prometheus:/etc/prometheus
-      - prometheus_data:/prometheus
+      - ./prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -28,8 +32,13 @@ services:
       - 9090
     networks:
       - monitor-net
+      - proxy
     labels:
-      org.label-schema.group: "monitoring"
+      - "org.label-schema.group=monitoring"
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.localhost`)"
+      - "traefik.http.routers.prometheus.entrypoints=web"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
 
   alertmanager:
     image: prom/alertmanager:v0.25.0
@@ -44,8 +53,44 @@ services:
       - 9093
     networks:
       - monitor-net
+      - proxy
     labels:
-      org.label-schema.group: "monitoring"
+      - "org.label-schema.group=monitoring"
+      - "traefik.enable=true"
+      - "traefik.http.routers.alertmanager.rule=Host(`alertmanager.localhost`)"
+      - "traefik.http.routers.alertmanager.entrypoints=web"
+      - "traefik.http.services.alertmanager.loadbalancer.server.port=9093"
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+#    ports:
+#      - '1025:1025'
+#      - '8025:8025'
+    networks:
+      - monitor-net
+      - proxy
+    restart: unless-stopped
+    labels:
+      - "org.label-schema.group=monitoring"
+      - "traefik.enable=true"
+      - "traefik.http.routers.mailhog.rule=Host(`mailhog.localhost`)"
+      - "traefik.http.routers.mailhog.entrypoints=web"
+      - "traefik.http.services.mailhog.loadbalancer.server.port=8025"
+
+  # This container contains the TLS SMTP server which connects to the Mailhog server
+  stunnel:
+    image: dweomer/stunnel:latest
+    container_name: stunnel
+    restart: unless-stopped
+    environment:
+      - STUNNEL_SERVICE=smtps
+      - STUNNEL_ACCEPT=465
+      - STUNNEL_CONNECT=mailhog:1025
+    ports:
+      - "465:465"
+    networks:
+      - monitor-net
 
   nodeexporter:
     image: prom/node-exporter:v1.5.0
@@ -84,14 +129,19 @@ services:
       - 8080
     networks:
       - monitor-net
+      - proxy
     labels:
-      org.label-schema.group: "monitoring"
+      - "org.label-schema.group=monitoring"
+      - "traefik.enable=true"
+      - "traefik.http.routers.cadvisor.rule=Host(`cadvisor.localhost`)"
+      - "traefik.http.routers.cadvisor.entrypoints=web"
+      - "traefik.http.services.cadvisor.loadbalancer.server.port=8080"
 
   grafana:
     image: grafana/grafana:9.3.2
     container_name: grafana
     volumes:
-      - grafana_data:/var/lib/grafana
+      - ./grafana_data:/var/lib/grafana
       - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
     environment:
@@ -103,8 +153,13 @@ services:
       - 3000
     networks:
       - monitor-net
+      - proxy
     labels:
-      org.label-schema.group: "monitoring"
+      - "org.label-schema.group=monitoring"
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.localhost`)"
+      - "traefik.http.routers.grafana.entrypoints=web"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
   pushgateway:
     image: prom/pushgateway:v1.5.1
@@ -114,18 +169,24 @@ services:
       - 9091
     networks:
       - monitor-net
+      - proxy
     labels:
-      org.label-schema.group: "monitoring"
+      - "org.label-schema.group=monitoring"
+      - "traefik.enable=true"
+      - "traefik.http.routers.pushgateway.rule=Host(`pushgateway.localhost`)"
+      - "traefik.http.routers.pushgateway.entrypoints=web"
+      - "traefik.http.services.pushgateway.loadbalancer.server.port=9091"
 
   caddy:
-    image: caddy:2.6.2
+    image: caddy:2.6.4
     container_name: caddy
     ports:
-      - "3000:3000"
-      - "8080:8080"
-      - "9090:9090"
-      - "9093:9093"
-      - "9091:9091"
+      - "3100:3000" # Grafana
+      - "8080:8080" # cAdvisor
+      - "9090:9090" # Prometheus
+      - "9093:9093" # Alertmanager
+      - "9091:9091" # Pushgateway
+#      - "2019:2019" # Caddy API
     volumes:
       - ./caddy:/etc/caddy
     environment:
@@ -135,5 +196,6 @@ services:
     restart: unless-stopped
     networks:
       - monitor-net
+      - proxy
     labels:
-      org.label-schema.group: "monitoring"
+      - "org.label-schema.group=monitoring"

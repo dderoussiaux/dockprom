@@ -1,4 +1,7 @@
 *DS_Store
 .vs/
 .vscode/
+.env
 .idea/
+grafana_data/
+prometheus_data/
