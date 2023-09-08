@@ -36,8 +36,9 @@ services:
     labels:
       - "org.label-schema.group=monitoring"
       - "traefik.enable=true"
-      - "traefik.http.routers.prometheus.rule=Host(`prometheus.localhost`)"
-      - "traefik.http.routers.prometheus.entrypoints=web"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.traefik.me`)"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls=true"
       - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
 
   alertmanager:
@@ -57,8 +58,9 @@ services:
     labels:
       - "org.label-schema.group=monitoring"
       - "traefik.enable=true"
-      - "traefik.http.routers.alertmanager.rule=Host(`alertmanager.localhost`)"
-      - "traefik.http.routers.alertmanager.entrypoints=web"
+      - "traefik.http.routers.alertmanager.rule=Host(`alertmanager.traefik.me`)"
+      - "traefik.http.routers.alertmanager.entrypoints=websecure"
+      - "traefik.http.routers.alertmanager.tls=true"
       - "traefik.http.services.alertmanager.loadbalancer.server.port=9093"
 
   mailhog:
@@ -74,8 +76,9 @@ services:
     labels:
       - "org.label-schema.group=monitoring"
       - "traefik.enable=true"
-      - "traefik.http.routers.mailhog.rule=Host(`mailhog.localhost`)"
-      - "traefik.http.routers.mailhog.entrypoints=web"
+      - "traefik.http.routers.mailhog.rule=Host(`mailhog.traefik.me`)"
+      - "traefik.http.routers.mailhog.entrypoints=websecure"
+      - "traefik.http.routers.mailhog.tls=true"
       - "traefik.http.services.mailhog.loadbalancer.server.port=8025"
 
   # This container contains the TLS SMTP server which connects to the Mailhog server
@@ -133,8 +136,9 @@ services:
     labels:
       - "org.label-schema.group=monitoring"
       - "traefik.enable=true"
-      - "traefik.http.routers.cadvisor.rule=Host(`cadvisor.localhost`)"
-      - "traefik.http.routers.cadvisor.entrypoints=web"
+      - "traefik.http.routers.cadvisor.rule=Host(`cadvisor.traefik.me`)"
+      - "traefik.http.routers.cadvisor.entrypoints=websecure"
+      - "traefik.http.routers.cadvisor.tls=true"
       - "traefik.http.services.cadvisor.loadbalancer.server.port=8080"
 
   grafana:
@@ -157,8 +161,9 @@ services:
     labels:
       - "org.label-schema.group=monitoring"
       - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=Host(`grafana.localhost`)"
-      - "traefik.http.routers.grafana.entrypoints=web"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.traefik.me`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls=true"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
   pushgateway:
@@ -173,8 +178,9 @@ services:
     labels:
       - "org.label-schema.group=monitoring"
       - "traefik.enable=true"
-      - "traefik.http.routers.pushgateway.rule=Host(`pushgateway.localhost`)"
-      - "traefik.http.routers.pushgateway.entrypoints=web"
+      - "traefik.http.routers.pushgateway.rule=Host(`pushgateway.traefik.me`)"
+      - "traefik.http.routers.pushgateway.entrypoints=websecure"
+      - "traefik.http.routers.pushgateway.tls=true"
       - "traefik.http.services.pushgateway.loadbalancer.server.port=9091"
 
   caddy:
