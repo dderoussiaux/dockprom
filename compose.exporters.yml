@@ -1,4 +1,4 @@
-version: '2.1'
+version: '3.7'
 
 services:
 
@@ -35,5 +35,5 @@ services:
     network_mode: host
     labels:
       org.label-schema.group: "monitoring"
-  
+
 

@@ -1,4 +1,5 @@
-DOCKER_COMPOSE=$$(command -v docker-compose)
+DOCKER=$$(command -v docker)
+DOCKER_COMPOSE="$(DOCKER) compose"
 NO_DATA_CONTAINERS=alertmanager,mailhog,stunnel,nodeexporter,cadvisor,pushgateway,caddy
 
 CURRENT_UID=$(shell id -u)
