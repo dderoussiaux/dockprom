@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   prometheus:
-    image: prom/prometheus:v2.41.0
+    image: prom/prometheus:latest
     container_name: prometheus
     env_file:
       - .env
@@ -31,7 +31,7 @@ services:
       - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
 
   alertmanager:
-    image: prom/alertmanager:v0.25.0
+    image: prom/alertmanager:latest
     container_name: alertmanager
     volumes:
       - ./alertmanager:/etc/alertmanager
@@ -85,7 +85,7 @@ services:
       - monitor-net
 
   nodeexporter:
-    image: prom/node-exporter:v1.5.0
+    image: prom/node-exporter:latest
     container_name: nodeexporter
     volumes:
       - /proc:/host/proc:ro
@@ -105,7 +105,7 @@ services:
       org.label-schema.group: "monitoring"
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.46.0
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
     container_name: cadvisor
     privileged: true
     devices:
@@ -131,7 +131,7 @@ services:
       - "traefik.http.services.cadvisor.loadbalancer.server.port=8080"
 
   grafana:
-    image: grafana/grafana:9.3.2
+    image: grafana/grafana:latest
     container_name: grafana
     volumes:
       - ./grafana_data:/var/lib/grafana
@@ -156,7 +156,7 @@ services:
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
   pushgateway:
-    image: prom/pushgateway:v1.5.1
+    image: prom/pushgateway:latest
     container_name: pushgateway
     restart: unless-stopped
     expose:
@@ -173,7 +173,7 @@ services:
       - "traefik.http.services.pushgateway.loadbalancer.server.port=9091"
 
   caddy:
-    image: caddy:2.6.4
+    image: caddy:latest
     container_name: caddy
     ports:
       - "3100:3000" # Grafana
