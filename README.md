@@ -11,7 +11,7 @@ Clone this repository on your Docker host, cd into dockprom directory and run co
 git clone https://github.com/stefanprodan/dockprom
 cd dockprom
 
-ADMIN_USER='admin' ADMIN_PASSWORD='admin' ADMIN_PASSWORD_HASH='$2a$14$1l.IozJx7xQRVmlkEQ32OeEEfP5mRxTpbDTCTcXRqn19gXD8YK1pO' docker-compose up -d
+ADMIN_USER='admin' ADMIN_PASSWORD='admin' ADMIN_PASSWORD_HASH='$2a$14$1l.IozJx7xQRVmlkEQ32OeEEfP5mRxTpbDTCTcXRqn19gXD8YK1pO' docker compose up -d
 ```
 
 **Caddy v2 does not accept plaintext passwords. It MUST be provided as a hash value. The above password hash corresponds to ADMIN_PASSWORD 'admin'. To know how to generate hash password, refer [Updating Caddy to v2](#Updating-Caddy-to-v2)**
@@ -24,7 +24,7 @@ Prerequisites:
 ## Updating Caddy to v2
 
 Perform a `docker run --rm caddy caddy hash-password --plaintext 'ADMIN_PASSWORD'` in order to generate a hash for your new password.
-ENSURE that you replace `ADMIN_PASSWORD` with new plain text password and `ADMIN_PASSWORD_HASH` with the hashed password references in [docker-compose.yml](./docker-compose.yml) for the caddy container.
+ENSURE that you replace `ADMIN_PASSWORD` with new plain text password and `ADMIN_PASSWORD_HASH` with the hashed password references in [compose.yml](./compose.yml) for the caddy container.
 
 Containers:
 
@@ -314,11 +314,11 @@ There are two possible solutions to this problem.
 1. Change ownership from 104 to 472
 2. Start the upgraded container as user 104
 
-## Specifying a user in docker-compose.yml
+## Specifying a user in compose.yml
 
 To change ownership of the files run your grafana container as root and modify the permissions.
 
-First perform a `docker-compose down` then modify your docker-compose.yml to include the `user: root` option:
+First perform a `docker compose down` then modify your compose.yml to include the `user: root` option:
 
 ```yaml
   grafana:
@@ -344,7 +344,7 @@ First perform a `docker-compose down` then modify your docker-compose.yml to inc
       org.label-schema.group: "monitoring"
 ```
 
-Perform a `docker-compose up -d` and then issue the following commands:
+Perform a `docker compose up -d` and then issue the following commands:
 
 ```bash
 docker exec -it --user root grafana bash
@@ -356,7 +356,7 @@ chown -R grafana:grafana /var/lib/grafana && \
 chown -R grafana:grafana /usr/share/grafana
 ```
 
-To run the grafana container as `user: 104` change your `docker-compose.yml` like such:
+To run the grafana container as `user: 104` change your `compose.yml` like such:
 
 ```yaml
   grafana:
