@@ -39,6 +39,12 @@ scrape_configs:
     static_configs:
       - targets: ['traefik:9092']
 
+# https://docs.dependencytrack.org/getting-started/monitoring/#grafana-dashboard
+#  - job_name: 'dtrack'
+#    scrape_interval: 5s
+#    static_configs:
+#      - targets: ['dtrack-api:8080']
+
 alerting:
   alertmanagers:
   - scheme: http
