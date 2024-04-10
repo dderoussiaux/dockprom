@@ -105,7 +105,7 @@ stop: ## Stop stack
 stop: docker-stop
 
 start: ## Start stack
-start: droits docker-start
+start: docker-start
 
 restart: ## Restart stack
 restart: stop start
@@ -116,12 +116,6 @@ reset: regen-envs docker-rebuild start
 update: ## Update stack
 update: stop docker-kill docker-pull-build start
 
-droits: ## Add permissions on volumes folders
-droits:
-	mkdir -p ./grafana_data
-	mkdir -p ./prometheus_data
-	sudo chown -R $(shell id -un):$(shell id -gn) ./grafana_data ./prometheus_data
-	sudo chmod -R 777 ./grafana_data ./prometheus_data
 
 # Default goal and help
 

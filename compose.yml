@@ -15,6 +15,9 @@ services:
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
     restart: unless-stopped
+    depends_on:
+      change-vol-ownership:
+        condition: service_completed_successfully
     expose:
       - 9090
     networks:
@@ -140,6 +143,9 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
       - GF_USERS_ALLOW_SIGN_UP=false
     restart: unless-stopped
+    depends_on:
+      change-vol-ownership:
+        condition: service_completed_successfully
     expose:
       - 3000
     networks:
@@ -192,6 +198,17 @@ services:
       - proxy
     labels:
       - "org.label-schema.group=monitoring"
+
+### TEMPORARY CONTAINER TO CHOWN VOLUME ###
+  change-vol-ownership:
+    image: ubuntu
+    env_file:
+      - .env
+    user: "root"
+    volumes:
+      - ./grafana_data:/tmp/grafana_data
+      - ./prometheus_data:/tmp/prometheus
+    command: chown -R ${UID:-1000}:${GID:-1000} /tmp/grafana_data /tmp/prometheus && chmod -R 777 /tmp/grafana_data /tmp/prometheus
 
 networks:
   monitor-net:
