@@ -1,7 +1,4 @@
-version: '3.7'
-
 services:
-
   nodeexporter:
     image: prom/node-exporter:v1.5.0
     container_name: nodeexporter
@@ -35,5 +32,3 @@ services:
     network_mode: host
     labels:
       org.label-schema.group: "monitoring"
-
-
